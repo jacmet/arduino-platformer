@@ -1,0 +1,39 @@
+joystick:
+
+void js_init(void);
+
+bool js_fire(void);
+
+int js_x(void); +/- 511
+
+int js_y(void); +/- 511
+
+JS_LEFT = 1
+JS_RIGHT = 2
+JS_UP = 4
+JS_DOWN = 8
+JS_FIRE = 16
+
+int js_get(void);
+
+
+
+tft:
+
+#define WIDTH 320
+#define HEIGHT 240
+
+void tft_init(void);
+void tft_fill(int x, int y, int w, int h, unsigned color)
+void tft_scroll(unsigned s); // 0..WIDTH-1
+void tft_cfg_scroll(unsigned top, unsigned bottom); // lines
+
+font: (calls into tft_fill())
+
+#define TRANSP 0xf81f /* purple */
+
+void font_putc(char c, int x, int y, int sx, int sy, unsigned fg,
+     	       unsigned bg);
+
+void font_puts(char *s, int x, int y, int sx, int sy, unsigned fg,
+     	       unsigned bg);
