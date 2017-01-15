@@ -124,16 +124,6 @@ static unsigned char tile2[256] = {
 	0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
 };
 
-static int scrollpos;
-
-static void set_scrollpos(int pos)
-{
-	while (pos < 0)
-		pos += WIDTH;
-
-	scrollpos = pos % WIDTH;
-}
-
 static void draw_tile(int col, int row, int index)
 {
 	unsigned char buf[256], *data;
