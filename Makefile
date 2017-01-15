@@ -1,4 +1,4 @@
-OBJS = emu.o font.o js.o tft.o
+OBJS = emu.o pc/font.o pc/js.o pc/tft.o
 
 CFLAGS = -O2 -g -I include $(shell pkg-config --cflags sdl2)
 LIBS = $(shell pkg-config --libs sdl2)
