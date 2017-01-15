@@ -1,6 +1,6 @@
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
-#include "SDL.h"
 
 #include "js.h"
 #include "tft.h"
@@ -176,33 +176,6 @@ static void draw_tile(int col, int row, int index)
 		}
 	}
 }
-
-static void render(SDL_Texture *tex, SDL_Renderer *rend)
-{
-	SDL_Rect src, dst;
-
-	memset(&src, 0, sizeof(src));
-	memset(&dst, 0, sizeof(dst));
-	src.x = scrollpos;
-	src.w = WIDTH - scrollpos;
-	src.h = HEIGHT;
-	dst.w = WIDTH - scrollpos;
-	dst.h = HEIGHT;
-
-	SDL_RenderClear(rend);
-	SDL_RenderCopy(rend, tex, &src, &dst);
-	if (scrollpos) {
-		memset(&src, 0, sizeof(src));
-		memset(&dst, 0, sizeof(dst));
-		src.w = scrollpos;
-		src.h = HEIGHT;
-		dst.x = WIDTH - scrollpos;
-		dst.w = scrollpos;
-		dst.h = HEIGHT;
-		SDL_RenderCopy(rend, tex, &src, &dst);
-	}
-}
-
 
 int main(int argc, char **argv)
 {
