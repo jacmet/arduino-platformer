@@ -17,6 +17,8 @@ static unsigned scroll_bottom;
 
 static int update;
 
+static unsigned short palette[256];
+
 static void update_texture(void)
 {
 	SDL_UpdateTexture(texture, NULL, screen, WIDTH * sizeof(screen[0]));
@@ -132,6 +134,29 @@ void tft_cfg_scroll(unsigned top, unsigned bottom) // lines
 
 	scroll_top = top;
 	scroll_bottom = bottom;
+	update = 1;
+}
+
+void tft_setpal(int idx, unsigned color)
+{
+	SDL_assert(idx >= 0);
+	SDL_assert(idx < 256);
+
+	palette[idx] = color;
+}
+
+void tft_blit8(int x, int y, int w, int h, unsigned char *d)
+{
+	int i, j;
+
+	SDL_assert(x >= 0); SDL_assert(x+w <= WIDTH);
+	SDL_assert(y >= 0); SDL_assert(y+h <= HEIGHT);
+	SDL_assert(d);
+
+	for (i = 0; i < h; i++)
+		for (j = 0; j < w; j++)
+			screen[(y + i) * WIDTH + x + j] = palette[*d++];
+
 	update = 1;
 }
 

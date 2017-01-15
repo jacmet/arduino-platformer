@@ -37,20 +37,6 @@
 #define WHITE       0xffff
 #define YELLOW      0xffe0
 
-
-static unsigned short screen[WIDTH * HEIGHT];
-
-static unsigned short colors[256] = {
-	PURPLE,
-	RED,
-	GREEN,
-	BLUE,
-	YELLOW,
-	WHITE,
-	LIGHTGREEN,
-	SKY,
-};
-
 static int worldpos = 0;
 
 static unsigned char world[] = {
@@ -169,12 +155,7 @@ static void draw_tile(int col, int row, int index)
 	row *= TILE;
 	col *= TILE;
 
-	i = 0;
-	for (y = 0; y < TILE; y++) {
-		for (x = 0; x < TILE; x++) {
-			screen[(y + row) * WIDTH + col + x] = colors[buf[i++]];
-		}
-	}
+	tft_blit8(col, row, TILE, TILE, buf);
 }
 
 int main(int argc, char **argv)
@@ -182,27 +163,27 @@ int main(int argc, char **argv)
 	int i, x, y, p;
 	int state;
 
-#if 0
-	for (y = 0; y < HEIGHT; y++)
-		for (x = 0; x < WIDTH; x++)
-			screen[y * WIDTH + x] = SKY;
+	tft_init();
+
+	i = 0;
+	p = 0;
+	x = 0;
+
+	tft_setpal(0, PURPLE);
+	tft_setpal(1, RED);
+	tft_setpal(2, GREEN);
+	tft_setpal(3, BLUE);
+	tft_setpal(4, YELLOW);
+	tft_setpal(5, WHITE);
+	tft_setpal(6, LIGHTGREEN);
+	tft_setpal(7, SKY);
 
 	for (x = 0; x < COLS; x++)
 		for (y = 0; y < ROWS; y++)
 			draw_tile(x, SCORE+y, world[worldpos + y + x*ROWS]);
-#else
-	tft_init();
-#endif
-	
-	i = 0;
-	p = 0;
-	x = 0;
-	font_puts("GAME", 0, 0, 10, 4, 0xf800, TRANSP);
-	font_puts("OVER....1.1.1.", 0, 40, 10, 4, 0xf81f, TRANSP);
-	font_puts("peter", 0, 100, 10, 4, 0xf800, TRANSP);
-	font_puts("hello world", 0, 200, 4, 5, 0x1f, SKY);
 
-	tft_cfg_scroll(32, 200);
+	font_puts("GAME", 0, 0, 10, 4, 0xf800, TRANSP);
+	tft_cfg_scroll(32, HEIGHT-1);
 	do {
 		state = js_state();
 
@@ -210,9 +191,6 @@ int main(int argc, char **argv)
 			p++;
 		else
 			p -= 3;
-
-//		if (state & JS_UP)
-		tft_scroll(i % WIDTH);
 
 		if (state & (JS_LEFT | JS_RIGHT)) {
 			if (state & JS_RIGHT)
@@ -225,8 +203,6 @@ int main(int argc, char **argv)
 			for (x = 0; x < COLS; x++)
 				for (y = 0; y < ROWS; y++)
 					draw_tile(x, SCORE+y, world[worldpos + y + x*ROWS]);
-
-//			SDL_UpdateTexture(texture, NULL, screen, WIDTH * sizeof(screen[0]));
 		}
 		tft_update();
 		usleep(15000);

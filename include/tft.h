@@ -11,4 +11,7 @@ void tft_cfg_scroll(unsigned top, unsigned bottom); // lines
 
 void tft_update(void);
 
+void tft_setpal(int idx, unsigned color);
+void tft_blit8(int x, int y, int w, int h, unsigned char *d);
+
 #endif
