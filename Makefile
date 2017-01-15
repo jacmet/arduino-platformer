@@ -7,3 +7,6 @@ all: emu
 
 emu: $(OBJS)
 	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
+clean:
+	rm -f emu $(OBJS)
