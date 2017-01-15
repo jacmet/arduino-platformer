@@ -21,6 +21,8 @@
 
 #define min(a, b) ( (a) < (b) ? (a) : (b) )
 
+static unsigned palette[256];
+
 static void send_cmd(unsigned char c)
 {
 	TFT_DC_LOW;
@@ -217,6 +219,34 @@ void tft_cfg_scroll(unsigned top, unsigned bottom) // lines
   send_data16(top);
   send_data16(WIDTH - top - bottom);
   send_data16(bottom);
+}
+
+void tft_setpal(int idx, unsigned color)
+{
+	palette[idx] = color;
+}
+
+void tft_blit8(int x, int y, int w, int h, unsigned char *d)
+{
+	int i, j;
+
+	set_column(x, x+w);
+	set_page(y, y+h);
+
+	send_cmd(0x2c);
+
+	TFT_DC_HIGH;
+	TFT_CS_LOW;
+
+	for (i = 0; i < h; i++) {
+		for (j = 0; j < w; j++) {
+			unsigned c = palette[*d++];
+			SPI.transfer(c >> 8);
+			SPI.transfer(c & 0xff);
+		}
+	}
+
+	TFT_CS_HIGH;
 }
 
 void tft_update(void)
