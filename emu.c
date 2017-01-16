@@ -39,9 +39,17 @@
 
 static int worldpos = 0;
 
+struct Player
+{
+	int x, y;
+	int speed_x, speed_y;
+};
+
+static struct Player player;
+
 static unsigned char world[] = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
 	0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	0, 0, 2, 0, 0, 0, 0, 0, 1, 0, 0, 1,
@@ -50,7 +58,7 @@ static unsigned char world[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,
@@ -104,6 +112,7 @@ static unsigned char tile1[256] = {
 	0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x1,
 	0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x2, 0x1, 0x1,
 	0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1,
+	0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1, 0x1,
 };
 
 static unsigned char tile2[256] = {
@@ -152,6 +161,7 @@ int main(int argc, char **argv)
 {
 	int i, x, y, p;
 	int state;
+	int on_floor = 0;
 
 	tft_init();
 
@@ -174,28 +184,72 @@ int main(int argc, char **argv)
 
 	font_puts("GAME", 0, 0, 10, 4, 0xf800, TRANSP);
 	tft_cfg_scroll(32, HEIGHT-1);
+	player.x = 20;
+	player.y = 10;
+
 	do {
 		state = js_state();
 
-		if (i < 500)
-			p++;
-		else
-			p -= 3;
+		tft_fill(player.x, 48 + player.y, 16, 16, SKY);
+		{
+			int x1, x2, y1, y2;
+			int tx, ty;
 
-		if (state & (JS_LEFT | JS_RIGHT)) {
+			player.speed_y += 1;
+			player.speed_x = (player.speed_x * 3) / 4;
+
+			if (on_floor && state & JS_UP)
+				player.speed_y -= 12;
+
 			if (state & JS_RIGHT)
-				worldpos += ROWS;
-			else
-				worldpos -= ROWS;
+				player.speed_x += 1;
 
-			if (worldpos < 0)
-				worldpos = 0;
-			for (x = 0; x < COLS; x++)
-				for (y = 0; y < ROWS; y++)
-					draw_tile(x, SCORE+y, world[worldpos + y + x*ROWS]);
+			if (state & JS_LEFT)
+				player.speed_x -= 1;
+
+			player.x += player.speed_x;
+			player.y += player.speed_y;
+
+			x1 = (player.x) / TILE;
+			x2 = (player.x + 15) / TILE;
+
+			on_floor = 0;
+			if (player.speed_y < 0) {
+				y1 = (player.y) / TILE;
+
+				if (world[x1 * ROWS + y1] == 1 || world[x2 * ROWS + y1] == 1) {
+					player.y = (y1 + 1) * TILE;
+					player.speed_y = 0;
+				}
+			} else {
+				y2 = (player.y + 15) / TILE;
+				if (world[x1 * ROWS + y2] == 1 || world[x2 * ROWS + y2] == 1) {
+					player.y = (y2 - 1) * TILE;
+					player.speed_y = 0;
+					on_floor = 1;
+				}
+			}
+
+			/* new y position */
+			y1 = (player.y) / TILE;
+			y2 = (player.y + 15) / TILE;
+
+			if (player.speed_x < 0) {
+				if (player.x < TILE || world[x1 * ROWS + y1] == 1 || world[x1 * ROWS + y2] == 1) {
+					player.x = (x1 + 1) * TILE;
+					player.speed_x = 0;
+				}
+			} else {
+				if (world[x2 * ROWS + y1] == 1 || world[x2 * ROWS + y2] == 1) {
+					player.x = (x2 - 1) * TILE;
+					player.speed_x = 0;
+				}
+			}
 		}
+
+		tft_fill(player.x, 48 + player.y, 16, 16, RED);
 		tft_update();
-		usleep(15000);
+		usleep(35000);
 
 		i++;
 	} while (!(state & JS_QUIT));
