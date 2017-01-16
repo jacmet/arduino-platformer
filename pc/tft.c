@@ -160,6 +160,25 @@ void tft_blit8(int x, int y, int w, int h, unsigned char *d)
 	update = 1;
 }
 
+void tft_blit8x2(int x, int y, int w, int h, unsigned char *d)
+{
+	int i, j;
+
+	SDL_assert(x >= 0); SDL_assert(x+w*2 <= WIDTH);
+	SDL_assert(y >= 0); SDL_assert(y+h*2 <= HEIGHT);
+	SDL_assert(d);
+
+	for (i = 0; i < h; i++) {
+		for (j = 0; j < w; j++) {
+			screen[(y + i*2) * WIDTH + x + j*2] = palette[*d];
+			screen[(y + i*2) * WIDTH + x + j*2 + 1] = palette[*d];
+			screen[(y + i*2 + 1) * WIDTH + x + j*2] = palette[*d];
+			screen[(y + i*2 + 1) * WIDTH + x + j*2 + 1] = palette[*d++];
+		}
+	}
+	update = 1;
+}
+
 void tft_update(void)
 {
 	update_texture();

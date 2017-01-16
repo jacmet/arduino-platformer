@@ -249,6 +249,39 @@ void tft_blit8(int x, int y, int w, int h, unsigned char *d)
 	TFT_CS_HIGH;
 }
 
+void tft_blit8x2(int x, int y, int w, int h, unsigned char *d)
+{
+	int i, j;
+
+	set_column(x, x+w*2);
+	set_page(y, y+h*2);
+
+	send_cmd(0x2c);
+
+	TFT_DC_HIGH;
+	TFT_CS_LOW;
+
+	for (i = 0; i < h; i++) {
+		for (j = 0; j < w; j++) {
+			unsigned c = palette[d[j]];
+			SPI.transfer(c >> 8);
+			SPI.transfer(c & 0xff);
+			SPI.transfer(c >> 8);
+			SPI.transfer(c & 0xff);
+		}
+		for (j = 0; j < w; j++) {
+			unsigned c = palette[d[j]];
+			SPI.transfer(c >> 8);
+			SPI.transfer(c & 0xff);
+			SPI.transfer(c >> 8);
+			SPI.transfer(c & 0xff);
+		}
+		d += w;
+	}
+
+	TFT_CS_HIGH;
+}
+
 void tft_update(void)
 {
 }
