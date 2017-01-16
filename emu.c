@@ -8,8 +8,13 @@
 
 #define WIDTH 320
 #define HEIGHT 240
+
 #define TILE 16
 #define SCORE 3
+
+#define PLAY_OFS 2
+#define PLAY_WIDTH (TILE - 1 - PLAY_OFS)
+#define PLAY_HEIGHT (TILE - 1)
 
 #define COLS (WIDTH / TILE)
 #define ROWS ((HEIGHT / TILE) - SCORE)
@@ -159,15 +164,11 @@ static void draw_tile(int col, int row, int index)
 
 int main(int argc, char **argv)
 {
-	int i, x, y, p;
+	int x, y;
 	int state;
 	int on_floor = 0;
 
 	tft_init();
-
-	i = 0;
-	p = 0;
-	x = 0;
 
 	tft_setpal(0, PURPLE);
 	tft_setpal(1, RED);
@@ -188,70 +189,74 @@ int main(int argc, char **argv)
 	player.y = 10;
 
 	do {
+		int x1, x2, y1, y2;
+
 		state = js_state();
 
-		tft_fill(player.x, 48 + player.y, 16, 16, SKY);
-		{
-			int x1, x2, y1, y2;
-			int tx, ty;
+		/* erase old player position */
+		x = player.x / TILE;
+		y = player.y / TILE;
+		draw_tile(x, SCORE+y, world[worldpos + y + x*ROWS]);
+		draw_tile(x+1, SCORE+y, world[worldpos + y + (x+1)*ROWS]);
+		y++;
+		draw_tile(x, SCORE+y, world[worldpos + y + x*ROWS]);
+		draw_tile(x+1, SCORE+y, world[worldpos + y + (x+1)*ROWS]);
 
-			player.speed_y += 1;
-			player.speed_x = (player.speed_x * 3) / 4;
+		player.speed_y += 1;
+		player.speed_x = (player.speed_x * 3) / 4;
 
-			if (on_floor && state & JS_UP)
-				player.speed_y -= 12;
+		if (on_floor && state & JS_UP)
+			player.speed_y -= 12;
 
-			if (state & JS_RIGHT)
-				player.speed_x += 1;
+		if (state & JS_RIGHT)
+			player.speed_x += 1;
 
-			if (state & JS_LEFT)
-				player.speed_x -= 1;
+		if (state & JS_LEFT)
+			player.speed_x -= 1;
 
-			player.x += player.speed_x;
-			player.y += player.speed_y;
+		player.x += player.speed_x;
+		player.y += player.speed_y;
 
-			x1 = (player.x) / TILE;
-			x2 = (player.x + 15) / TILE;
+		x1 = (player.x + PLAY_OFS) / TILE;
+		x2 = (player.x + PLAY_WIDTH) / TILE;
 
-			on_floor = 0;
-			if (player.speed_y < 0) {
-				y1 = (player.y) / TILE;
-
-				if (world[x1 * ROWS + y1] == 1 || world[x2 * ROWS + y1] == 1) {
-					player.y = (y1 + 1) * TILE;
-					player.speed_y = 0;
-				}
-			} else {
-				y2 = (player.y + 15) / TILE;
-				if (world[x1 * ROWS + y2] == 1 || world[x2 * ROWS + y2] == 1) {
-					player.y = (y2 - 1) * TILE;
-					player.speed_y = 0;
-					on_floor = 1;
-				}
-			}
-
-			/* new y position */
+		on_floor = 0;
+		if (player.speed_y < 0) {
 			y1 = (player.y) / TILE;
-			y2 = (player.y + 15) / TILE;
 
-			if (player.speed_x < 0) {
-				if (player.x < TILE || world[x1 * ROWS + y1] == 1 || world[x1 * ROWS + y2] == 1) {
-					player.x = (x1 + 1) * TILE;
-					player.speed_x = 0;
-				}
-			} else {
-				if (world[x2 * ROWS + y1] == 1 || world[x2 * ROWS + y2] == 1) {
-					player.x = (x2 - 1) * TILE;
-					player.speed_x = 0;
-				}
+			if (world[x1 * ROWS + y1] == 1 || world[x2 * ROWS + y1] == 1) {
+				player.y = (y1 + 1) * TILE;
+				player.speed_y = 0;
+			}
+		} else {
+			y2 = (player.y + PLAY_HEIGHT) / TILE;
+			if (world[x1 * ROWS + y2] == 1 || world[x2 * ROWS + y2] == 1) {
+				player.y = (y2 - 1) * TILE;
+				player.speed_y = 0;
+				on_floor = 1;
 			}
 		}
 
-		tft_fill(player.x, 48 + player.y, 16, 16, RED);
+		/* new y position */
+		y1 = (player.y) / TILE;
+		y2 = (player.y + PLAY_HEIGHT) / TILE;
+
+		if (player.speed_x < 0) {
+			if (player.x < (TILE - PLAY_OFS) || world[x1 * ROWS + y1] == 1 || world[x1 * ROWS + y2] == 1) {
+				player.x = (x1 + 1) * TILE - PLAY_OFS;
+				player.speed_x = 0;
+			}
+		} else {
+			if (world[x2 * ROWS + y1] == 1 || world[x2 * ROWS + y2] == 1) {
+				player.x = (x2 - 1) * TILE + PLAY_OFS;
+				player.speed_x = 0;
+			}
+		}
+
+		tft_fill(player.x, 48 + player.y, 16, 16, YELLOW);
 		tft_update();
 		usleep(35000);
 
-		i++;
 	} while (!(state & JS_QUIT));
 
 	return 0;
