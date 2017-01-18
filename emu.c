@@ -189,7 +189,7 @@ int main(int argc, char **argv)
 	player.y = 10;
 
 	do {
-		int x1, x2, y1, y2;
+		int wx, wy;
 
 		state = js_state();
 
@@ -214,42 +214,43 @@ int main(int argc, char **argv)
 		if (state & JS_LEFT)
 			player.speed_x -= 1;
 
+		wx = (player.x + 8) / TILE;
+		wy = (player.y + 8) / TILE;
+
 		player.x += player.speed_x;
 		player.y += player.speed_y;
 
-		x1 = (player.x + PLAY_OFS) / TILE;
-		x2 = (player.x + PLAY_WIDTH) / TILE;
-
 		on_floor = 0;
-		if (player.speed_y < 0) {
-			y1 = (player.y) / TILE;
 
-			if (world[x1 * ROWS + y1] == 1 || world[x2 * ROWS + y1] == 1) {
-				player.y = (y1 + 1) * TILE;
-				player.speed_y = 0;
+		if (player.speed_x < 0) {
+			/* check left */
+			if (player.x < (TILE - PLAY_OFS) ||
+			    (world[(wx - 1) * ROWS + wy] == 1 && player.x < wx*TILE)) {
+				player.x = (wx * TILE);// - PLAY_OFS;
+				player.speed_x = 0;
 			}
 		} else {
-			y2 = (player.y + PLAY_HEIGHT) / TILE;
-			if (world[x1 * ROWS + y2] == 1 || world[x2 * ROWS + y2] == 1) {
-				player.y = (y2 - 1) * TILE;
-				player.speed_y = 0;
-				on_floor = 1;
+			if (world[(wx + 1) * ROWS + wy] == 1 &&
+			    (player.x + 15) > (wx+1) * TILE) {
+				player.x = wx * TILE + PLAY_OFS;
+				player.speed_x = 0;
 			}
 		}
 
-		/* new y position */
-		y1 = (player.y) / TILE;
-		y2 = (player.y + PLAY_HEIGHT) / TILE;
 
-		if (player.speed_x < 0) {
-			if (player.x < (TILE - PLAY_OFS) || world[x1 * ROWS + y1] == 1 || world[x1 * ROWS + y2] == 1) {
-				player.x = (x1 + 1) * TILE - PLAY_OFS;
-				player.speed_x = 0;
+		if (player.speed_y < 0) {
+			/* check above */
+			if (world[wx * ROWS + wy - 1] == 1 && player.y <= wy*TILE) {
+				player.y = wy*TILE;
+				player.speed_y = 0;
 			}
 		} else {
-			if (world[x2 * ROWS + y1] == 1 || world[x2 * ROWS + y2] == 1) {
-				player.x = (x2 - 1) * TILE + PLAY_OFS;
-				player.speed_x = 0;
+			/* check below */
+			if (world[wx * ROWS + wy + 1] == 1 &&
+			    (player.y + 15) > (wy + 1)*TILE) {
+				player.y = (wy + 1) * TILE - 15;
+				player.speed_y = 0;
+				on_floor = 1;
 			}
 		}
 
