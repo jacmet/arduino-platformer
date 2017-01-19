@@ -78,17 +78,21 @@ static void render_texture(void)
 
 void tft_init(void)
 {
+	Uint32 flags = 0;
 	int i, x, y, p;
 
 	/* Initialize SDL. */
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
 		exit(1);
 
+	if (getenv("FULLSCREEN"))
+		flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+
 	window = SDL_CreateWindow("tft",
 				  SDL_WINDOWPOS_UNDEFINED,
 				  SDL_WINDOWPOS_UNDEFINED,
-				  WIDTH, HEIGHT,
-				  SDL_WINDOW_FULLSCREEN_DESKTOP);
+				  WIDTH, HEIGHT, flags);
+
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
 	SDL_RenderSetLogicalSize(renderer, WIDTH, HEIGHT);
 
