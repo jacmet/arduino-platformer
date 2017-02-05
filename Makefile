@@ -10,3 +10,6 @@ emu: $(OBJS)
 
 clean:
 	rm -f emu $(OBJS)
+
+include/%.h: gfx/%.png
+	./png2h.py $^ $(basename $(notdir $^)) > $@
