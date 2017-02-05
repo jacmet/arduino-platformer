@@ -24,7 +24,7 @@ if img.size != DIMENSIONS or img.mode != 'P' or len(img.palette.palette) > MAXCO
     sys.exit(1)
 
 # engine expects row major format
-#img = img.transpose(Image.TRANSPOSE)
+img = img.transpose(Image.TRANSPOSE)
 pixels = img.tobytes()
 
 alpha = True if img.palette.mode == 'RGBA' else False
