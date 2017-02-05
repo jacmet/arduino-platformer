@@ -251,6 +251,8 @@ int main(int argc, char **argv)
 	int state;
 	int on_floor = 0;
 
+	int frame = 0;
+
 	tft_init();
 
 	tft_setpal(0, SKY);
@@ -317,6 +319,7 @@ int main(int argc, char **argv)
 
 	do {
 		int wx, wy;
+		int sprite;
 
 		state = js_state();
 
@@ -389,14 +392,24 @@ int main(int argc, char **argv)
 		}
 
 		/* redraw */
-		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, 20);
-		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, 20);
+		if (!on_floor)
+			sprite = 23;
+		else {
+			if (!player.speed_x)
+				sprite = 20;
+			else
+				sprite = (frame & 2) ? 21 : 22;
+		}
+
+		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, sprite);
+		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, sprite);
 		x++;
-		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, 20);
-		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, 20);
+		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, sprite);
+		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, sprite);
 
 //		tft_fill(player.x, 48 + player.y, 16, 16, YELLOW);
 		tft_update();
+		frame++;
 		usleep(35000);
 
 	} while (!(state & JS_QUIT));
