@@ -183,7 +183,7 @@ static void render_tile_col(unsigned char *buf, int index, int col)
 	}
 }
 
-static void draw_tile_player(int col, int row, int index, int playerx, int playery, int player)
+static void draw_tile_player(int col, int row, int index, int playerx, int playery, int player, int mirror)
 {
 	unsigned char tilebuf[TILE], playerbuf[TILE];
 	int x;
@@ -211,8 +211,12 @@ static void draw_tile_player(int col, int row, int index, int playerx, int playe
 				end = TILE;
 			}
 
-			if (end > start)
-				render_tile_col(playerbuf, player, x - playerx);
+			if (end > start) {
+				int play_x = x - playerx;
+				if (mirror)
+					play_x = TILE - 1 - play_x;
+				render_tile_col(playerbuf, player, play_x);
+			}
 
 			for (y = start; y < end; y++) {
 				if (playerbuf[startp])
@@ -229,7 +233,7 @@ static void draw_tile_player(int col, int row, int index, int playerx, int playe
 
 static void draw_tile(int col, int row, int index)
 {
-	draw_tile_player(col, row, index, -TILE, -TILE, 0);
+	draw_tile_player(col, row, index, -TILE, -TILE, 0, 0);
 }
 
 static void draw_tile_col(int col, int row, int index, int pos)
@@ -252,6 +256,7 @@ int main(int argc, char **argv)
 	int on_floor = 0;
 
 	int frame = 0;
+	int mirror = 0;
 
 	tft_init();
 
@@ -401,11 +406,16 @@ int main(int argc, char **argv)
 				sprite = (frame & 2) ? 21 : 22;
 		}
 
-		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, sprite);
-		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, sprite);
+		if (player.speed_x > 0)
+			mirror = 0;
+		else if (player.speed_x < 0)
+			mirror = 1;
+
+		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, sprite, mirror);
+		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, sprite, mirror);
 		x++;
-		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, sprite);
-		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, sprite);
+		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, sprite, mirror);
+		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, sprite, mirror);
 
 //		tft_fill(player.x, 48 + player.y, 16, 16, YELLOW);
 		tft_update();
