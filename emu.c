@@ -137,7 +137,7 @@ static unsigned char world[] = {
 };
 
 /* render column of index tile data to buf[TILE] */
-static void render_tile16col(unsigned char *buf, int index, int col)
+static void render_tile_col(unsigned char *buf, int index, int col)
 {
 	const unsigned char *data = NULL;
 	int i, j, ofs;
@@ -195,7 +195,7 @@ static void draw_tile_player(int col, int row, int index, int playerx, int playe
 	playery -= row;
 
 	for (x = 0; x < TILE; x++) {
-		render_tile16col(tilebuf, index, x);
+		render_tile_col(tilebuf, index, x);
 
 		if (x >= playerx && x < (playerx + TILE) && playery < TILE && (playery + TILE) > 0) {
 			int start, end, startp, y;
@@ -212,7 +212,7 @@ static void draw_tile_player(int col, int row, int index, int playerx, int playe
 			}
 
 			if (end > start)
-				render_tile16col(playerbuf, player, x - playerx);
+				render_tile_col(playerbuf, player, x - playerx);
 
 			for (y = start; y < end; y++) {
 				if (playerbuf[startp])
@@ -232,11 +232,11 @@ static void draw_tile(int col, int row, int index)
 	draw_tile_player(col, row, index, -TILE, -TILE, 0);
 }
 
-static void draw_tile16row(int col, int row, int index, int pos)
+static void draw_tile_col(int col, int row, int index, int pos)
 {
 	unsigned char buf[16];
 
-	render_tile16col(buf, index, pos);
+	render_tile_col(buf, index, pos);
 
 	row *= TILE;
 	col *= TILE;
@@ -383,7 +383,7 @@ int main(int argc, char **argv)
 						worldpos = (worldpos + ROWS) % (sizeof(world) - COLS*ROWS);
 
 					for (y = 0; y < ROWS; y++)
-						draw_tile16row(first/16, SCORE+y, world[worldpos + y + (COLS-1)*ROWS], first&15);
+						draw_tile_col(first/16, SCORE+y, world[worldpos + y + (COLS-1)*ROWS], first&15);
 					first = (first + 1) % WIDTH;
 					tft_scroll(first);
 				}
