@@ -323,11 +323,6 @@ int main(int argc, char **argv)
 		/* erase old player position */
 		x = player.x / TILE;
 		y = player.y / TILE;
-//		draw_tile16(x, SCORE+y, world[worldpos + y + x*ROWS]);
-//		draw_tile16(x+1, SCORE+y, world[worldpos + y + (x+1)*ROWS]);
-		y++;
-//		draw_tile16(x, SCORE+y, world[worldpos + y + x*ROWS]);
-//		draw_tile16(x+1, SCORE+y, world[worldpos + y + (x+1)*ROWS]);
 
 		player.speed_y += 1;
 		player.speed_x = (player.speed_x * 3) / 4;
@@ -377,6 +372,8 @@ int main(int argc, char **argv)
 			    (player.y + 15) > (wy + 1)*TILE) {
 				player.y = (wy + 1) * TILE - 15;
 				player.speed_y = 0;
+
+				if (0)
 				{
 					static int first = 0;
 					if ((first & 15) == 0)
@@ -390,6 +387,13 @@ int main(int argc, char **argv)
 				on_floor = 1;
 			}
 		}
+
+		/* redraw */
+		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, 20);
+		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, 20);
+		x++;
+		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, 20);
+		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, 20);
 
 //		tft_fill(player.x, 48 + player.y, 16, 16, YELLOW);
 		tft_update();
