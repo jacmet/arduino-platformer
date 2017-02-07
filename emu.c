@@ -99,10 +99,10 @@ static unsigned char world[] = {
 	0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 20, 1,
 
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
@@ -254,6 +254,8 @@ int main(int argc, char **argv)
 	int x, y;
 	int state;
 	int on_floor = 0;
+	int scrollpos = 0;
+	int wpos = 0;
 
 	int frame = 0;
 	int mirror = 0;
@@ -328,12 +330,11 @@ int main(int argc, char **argv)
 
 		state = js_state();
 
-		/* erase old player position */
 		x = player.x / TILE;
 		y = player.y / TILE;
 
 		player.speed_y += 1;
-		player.speed_x = (player.speed_x * 3) / 4;
+		player.speed_x = 0;//(player.speed_x * 3) / 4;
 
 		if (on_floor && state & JS_UP)
 			player.speed_y -= 12;
@@ -354,7 +355,7 @@ int main(int argc, char **argv)
 
 		if (player.speed_x < 0) {
 			/* check left */
-			if (player.x < (TILE - PLAY_OFS) ||
+			if ((player.x - wpos) < (TILE - PLAY_OFS) ||
 			    (world[(wx - 1) * ROWS + wy] == 1 && player.x < wx*TILE)) {
 				player.x = (wx * TILE);// - PLAY_OFS;
 				player.speed_x = 0;
@@ -411,13 +412,32 @@ int main(int argc, char **argv)
 		else if (player.speed_x < 0)
 			mirror = 1;
 
-		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, sprite, mirror);
-		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, sprite, mirror);
-		x++;
-		draw_tile_player(x, SCORE + y, world[worldpos + y + x*ROWS], player.x, player.y+48, sprite, mirror);
-		draw_tile_player(x, SCORE + y+1, world[worldpos + y + 1 + x*ROWS], player.x, player.y+48, sprite, mirror);
+		{
+			int xx = x % 20;
 
-//		tft_fill(player.x, 48 + player.y, 16, 16, YELLOW);
+		draw_tile_player(xx, SCORE + y, world[y + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
+		draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
+		x++;
+		xx++;
+		xx = xx % 20;
+		draw_tile_player(xx, SCORE + y, world[y + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
+		draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
+		}
+
+		/* halfway past screen? scroll */
+		if ((player.x - wpos) > WIDTH/2) {
+			for (y = 0; y < ROWS; y++)
+				draw_tile_col(scrollpos/TILE, SCORE+y,
+					      world[y + (wpos/TILE + COLS-1)*ROWS], scrollpos & (TILE-1));
+
+			wpos++;
+			scrollpos++;
+			if (scrollpos == WIDTH)
+				scrollpos = 0;
+
+			tft_scroll(scrollpos);
+		}
+
 		tft_update();
 		frame++;
 		usleep(35000);
