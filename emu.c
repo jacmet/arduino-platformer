@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "js.h"
 #include "tft.h"
@@ -440,7 +439,7 @@ int main(int argc, char **argv)
 
 		tft_update();
 		frame++;
-		usleep(35000);
+		delay(35);
 
 	} while (!(state & JS_QUIT));
 
