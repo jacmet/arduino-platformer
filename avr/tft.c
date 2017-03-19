@@ -209,7 +209,7 @@ void tft_fill(int x, int y, int w, int h, unsigned color)
 void tft_scroll(unsigned s) // 0..WIDTH-1
 {
   send_cmd(0x37);
-  send_data16(s);
+  send_data16(WIDTH - s);
 }
 
 void tft_cfg_scroll(unsigned top, unsigned bottom) // lines
