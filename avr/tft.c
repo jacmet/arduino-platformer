@@ -48,18 +48,18 @@ static void send_data16(unsigned d)
 	TFT_CS_HIGH;
 }
 
-static void set_column(unsigned start, unsigned end)
+static void set_column(unsigned start, unsigned width)
 {
 	send_cmd(0x2A);                                         /* Column Command address       */
 	send_data16(start);
-	send_data16(end);
+	send_data16(start + width - 1);
 }
 
-static void set_page(unsigned start, unsigned end)
+static void set_page(unsigned start, unsigned height)
 {
 	send_cmd(0x2b);                                         /* Page Command address       */
 	send_data16(start);
-	send_data16(end);
+	send_data16(start + height - 1);
 }
 
 void tft_init(void)
@@ -187,8 +187,8 @@ void tft_fill(int x, int y, int w, int h, unsigned color)
 	h = min(h, HEIGHT - y);
 
 	if (w && h) {
-		set_column(x, x+w);
-		set_page(y, y+h);
+		set_column(x, w);
+		set_page(y, h);
 
 		send_cmd(0x2c);
 
@@ -230,8 +230,8 @@ void tft_blit8(int x, int y, int w, int h, unsigned char *d)
 {
 	int i, j;
 
-	set_column(x, x+w);
-	set_page(y, y+h);
+	set_column(x, w);
+	set_page(y, h);
 
 	send_cmd(0x2c);
 
@@ -253,8 +253,8 @@ void tft_blit8x2(int x, int y, int w, int h, unsigned char *d)
 {
 	int i, j;
 
-	set_column(x, x+w*2);
-	set_page(y, y+h*2);
+	set_column(x, w*2);
+	set_page(y, h*2);
 
 	send_cmd(0x2c);
 
