@@ -7,6 +7,8 @@
 void tft_init(void);
 void tft_fill(int x, int y, int w, int h, unsigned color);
 void tft_scroll(unsigned s); // 0..WIDTH-1
+// number of lines at the top/bottom (cols left/right after rotation) to
+// NOT scroll. top+bottom <= WIDTH
 void tft_cfg_scroll(unsigned top, unsigned bottom); // lines
 
 void tft_update(void);
