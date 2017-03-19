@@ -1,4 +1,4 @@
-/* Arduino implementation */
+/* Arduino implementation for ili9341 */
 #include <Arduino.h>
 #include <SPI.h>
 #include "tft.h"
