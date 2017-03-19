@@ -167,7 +167,7 @@ static void render_tile_col(unsigned char *buf, int index, int col)
 		data += col * TILE/2;
 
 		for (i = 0; i < TILE; i++) {
-			unsigned char t = data[i / 2];
+			unsigned char t = pgm_read_byte(&data[i / 2]);
 
 			if (i & 1)
 				t = t >> 4;
