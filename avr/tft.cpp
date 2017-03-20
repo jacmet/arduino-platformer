@@ -19,8 +19,6 @@
 #define TFT_BL_OFF  {DDRB |= 0x02;PORTB &=~ 0x02;}
 #define TFT_BL_ON   {DDRB |= 0x02;PORTB |=  0x02;}
 
-#define min(a, b) ( (a) < (b) ? (a) : (b) )
-
 static unsigned palette[256];
 
 static void send_cmd(unsigned char c)
