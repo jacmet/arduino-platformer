@@ -2,6 +2,7 @@
 #define _COMPAT_H_
 
 #ifdef ARDUINO
+#include <Arduino.h>
 #include <avr/pgmspace.h>
 #else
 #include <unistd.h>
