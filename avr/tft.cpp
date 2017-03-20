@@ -202,6 +202,8 @@ void tft_init(void)
 
 	send_cmd(0x29);         //Display on
 	send_cmd(0x2c);
+
+	TFT_BL_ON;
 }
 
 void tft_fill(int x, int y, int w, int h, unsigned color)
