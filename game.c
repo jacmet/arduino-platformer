@@ -151,7 +151,7 @@ static unsigned char world[] = {
 static void render_tile_col(unsigned char *buf, int index, int col)
 {
 	const unsigned char *data = NULL;
-	int i, j, ofs;
+	int i, ofs;
 
 	switch (index) {
 	case 1: data = tile_wall;  ofs=7; break;
