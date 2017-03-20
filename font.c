@@ -14,7 +14,7 @@ void font_putc(char c, int x, int y, int sx, int sy, unsigned fg,
 	c -= 32;
 
 	for (w = 0; w < FONT_W; w++) {
-		unsigned char t = pgm_read_byte(&fontdata[c][w]);
+		unsigned char t = pgm_read_byte(&fontdata[(unsigned char)c][w]);
 		int yy = y;
 		for (h = 0; h < FONT_H; h++) {
 			if (t & 1)
