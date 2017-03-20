@@ -60,8 +60,28 @@ static void set_page(unsigned start, unsigned height)
 	send_data16(start + height - 1);
 }
 
+static unsigned char read_reg(unsigned char param)
+{
+	unsigned char data;
+
+	send_cmd(0xd9);
+	send_data8(0x10 + param);
+	TFT_DC_LOW;
+	TFT_CS_LOW;
+	SPI.transfer(0xd3);
+
+	TFT_DC_HIGH;
+	data = SPI.transfer(0);
+	TFT_CS_HIGH;
+
+	Serial.println(data);
+	return data;
+}
+
 void tft_init(void)
 {
+	int i;
+
 	SPI.begin();
 	TFT_CS_HIGH;
 	TFT_DC_HIGH;
@@ -69,6 +89,13 @@ void tft_init(void)
 	TFT_RST_ON;
 	delay(10);
 	TFT_RST_OFF;
+
+	/* undocumented initialization. Read ID registers (?) */
+	for (i = 0; i < 3; i++) {
+		read_reg(1);
+		read_reg(2);
+		read_reg(3);
+	}
 
 	send_cmd(0xCB);
 	send_data8(0x39);
