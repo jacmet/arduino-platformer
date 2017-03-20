@@ -1,6 +1,10 @@
 #ifndef _JS_H_
 #define _JS_H_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define JS_LEFT		0x01
 #define JS_RIGHT	0x02
 #define JS_UP		0x04
@@ -21,5 +25,9 @@ int js_y(void);
 
 /* get current state bitmask (JS_*) */
 int js_state(void);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif
