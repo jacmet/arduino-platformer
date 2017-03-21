@@ -93,23 +93,23 @@ static unsigned char world[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	0, 0, 0, 0, 0, 0, 0, 20, 1, 0, 2, 1,
+	0, 0, 0, 0, 0, 0, 0, 20, 1, 0, 6, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 3, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 7, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
-	0, 0, 0, 0, 0, 0, 30, 7, 7, 1, 1, 1,
-	0, 0, 0, 0, 0, 0, 9, 0, 0, 1, 1, 1,
-	4, 0, 0, 0, 0, 31, 9, 0, 0, 0, 0, 1,
-	5, 0, 0, 0, 0, 30, 9, 0, 0, 6, 6, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 7, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 1,
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 1,
+	0, 0, 0, 0, 0, 0, 30, 3, 3, 1, 1, 1,
+	0, 0, 0, 0, 0, 0, 5, 0, 0, 1, 1, 1,
+	8, 0, 0, 0, 0, 31, 5, 0, 0, 0, 0, 1,
+	9, 0, 0, 0, 0, 30, 5, 0, 0, 2, 2, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-	0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+	0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
+	0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0,
@@ -119,8 +119,8 @@ static unsigned char world[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
-	0, 0, 4, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-	0, 0, 5, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+	0, 0, 8, 0, 0, 0, 0, 1, 1, 1, 1, 1,
+	0, 0, 9, 0, 0, 0, 0, 1, 1, 1, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
@@ -156,14 +156,14 @@ static void render_tile_col(unsigned char *buf, int index, int col)
 
 	switch (index) {
 	case 1: data = tile_wall;  ofs=7; break;
-	case 2: data = tile_tree1; ofs=10; break;
-	case 3: data = tile_tree2; ofs=10; break;
-	case 4: data = tile_cloud1; ofs=13; break;
-	case 5: data = tile_cloud2; ofs=13; break;
-	case 6: data = tile_tube1; ofs=15; break;
-	case 7: data = tile_tube2; ofs=19; break;
-	case 8: data = tile_square; ofs=22; break;
-	case 9: data = tile_bridge; ofs=25; break;
+	case 2: data = tile_tube1; ofs=15; break;
+	case 3: data = tile_tube2; ofs=19; break;
+	case 4: data = tile_square; ofs=22; break;
+	case 5: data = tile_bridge; ofs=25; break;
+	case 6: data = tile_tree1; ofs=10; break;
+	case 7: data = tile_tree2; ofs=10; break;
+	case 8: data = tile_cloud1; ofs=13; break;
+	case 9: data = tile_cloud2; ofs=13; break;
 	case 14: data = tile_fries; ofs=70; break;
 	case 15: data = tile_donut; ofs=77; break;
 
@@ -277,7 +277,7 @@ static void draw_tile_col(int col, int row, int index, int pos)
 
 static int solid_tile(unsigned char tile)
 {
-	return tile == 1;
+	return tile > 0 && tile < 6;
 }
 
 void game_init(void)
