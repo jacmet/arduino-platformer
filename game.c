@@ -352,6 +352,7 @@ void game_init(void)
 
 	player.x = 20;
 	player.y = 10;
+
 }
 
 void game_loop(void)
@@ -450,7 +451,7 @@ void game_loop(void)
 			if (!player.speed_x)
 				sprite = 20;
 			else
-				sprite = (frame & 2) ? 21 : 22;
+				sprite = (frame & 4) ? 21 : 22;
 		}
 
 		if (player.speed_x > 0)
