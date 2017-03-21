@@ -179,16 +179,16 @@ static void render_tile_col(unsigned char *buf, int index, int col)
 	case 26: data = tile_boy2; ofs=50; break;
 	case 27: data = tile_boy3; ofs=50; break;
 
-	case 100: data = tile_dig0; ofs=5; break;
-	case 101: data = tile_dig1; ofs=5; break;
-	case 102: data = tile_dig2; ofs=5; break;
-	case 103: data = tile_dig3; ofs=5; break;
-	case 104: data = tile_dig4; ofs=5; break;
-	case 105: data = tile_dig5; ofs=5; break;
-	case 106: data = tile_dig6; ofs=5; break;
-	case 107: data = tile_dig7; ofs=5; break;
-	case 108: data = tile_dig8; ofs=5; break;
-	case 109: data = tile_dig9; ofs=5; break;
+	case 100: data = tile_dig0; ofs=4; break;
+	case 101: data = tile_dig1; ofs=4; break;
+	case 102: data = tile_dig2; ofs=4; break;
+	case 103: data = tile_dig3; ofs=4; break;
+	case 104: data = tile_dig4; ofs=4; break;
+	case 105: data = tile_dig5; ofs=4; break;
+	case 106: data = tile_dig6; ofs=4; break;
+	case 107: data = tile_dig7; ofs=4; break;
+	case 108: data = tile_dig8; ofs=4; break;
+	case 109: data = tile_dig9; ofs=4; break;
 	}
 
 	if (data) {
