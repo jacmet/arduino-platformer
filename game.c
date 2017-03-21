@@ -465,7 +465,7 @@ void game_loop(void)
 		if ((player.x - wpos) > WIDTH/2) {
 			for (y = 0; y < ROWS; y++)
 				draw_tile_col(scrollpos/TILE, SCORE+y,
-					      world[y + (wpos/TILE + COLS-1)*ROWS], scrollpos & (TILE-1));
+					      world[y + (wpos/TILE + COLS)*ROWS], scrollpos & (TILE-1));
 
 			wpos++;
 			scrollpos++;
