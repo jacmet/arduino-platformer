@@ -44,6 +44,10 @@
 #define TILE 16
 #define SCORE 3
 
+/* height (y-coordinates) to consider player dead from
+   (E.G. when falling into hole) */
+#define DEAD_HEIGHT (HEIGHT - (SCORE + 1) * TILE - TILE/2)
+
 #define PLAY_OFS 2
 #define PLAY_WIDTH (TILE - 1 - PLAY_OFS)
 #define PLAY_HEIGHT (TILE - 1)
@@ -422,6 +426,10 @@ void game_loop(void)
 				on_floor = 1;
 			}
 		}
+
+		/* fall into hole? */
+		if (player.y > DEAD_HEIGHT)
+			return;
 
 		/* redraw */
 		if (!on_floor)
