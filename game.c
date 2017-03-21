@@ -48,6 +48,9 @@
    (E.G. when falling into hole) */
 #define DEAD_HEIGHT (HEIGHT - (SCORE + 1) * TILE - TILE/2)
 
+/* maximum allowed speed in Y-direction (to not fall through the floor) */
+#define MAX_YSPEED 10
+
 #define PLAY_OFS 2
 #define PLAY_WIDTH (TILE - 1 - PLAY_OFS)
 #define PLAY_HEIGHT (TILE - 1)
@@ -371,7 +374,8 @@ void game_loop(void)
 		x = player.x / TILE;
 		y = player.y / TILE;
 
-		player.speed_y += 1;
+		if (player.speed_y < MAX_YSPEED)
+			player.speed_y += 1;
 		player.speed_x = 0;//(player.speed_x * 3) / 4;
 
 		if (on_floor && state & JS_UP)
