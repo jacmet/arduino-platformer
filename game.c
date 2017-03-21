@@ -448,11 +448,19 @@ void game_loop(void)
 		draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
 		x++;
 		xx++;
-		xx = xx % 20;
-		draw_tile_player(xx, SCORE + y, world[y + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
-		draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
+
+		/* handle wraparound */
+		if (xx >= WIDTH/TILE) {
+			xx -= WIDTH/TILE;
+			draw_tile_player(xx, SCORE + y, world[y + x*ROWS], (player.x % WIDTH) - WIDTH, player.y+48, sprite, mirror);
+			draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], (player.x % WIDTH) - WIDTH, player.y+48, sprite, mirror);
+
+		} else {
+			draw_tile_player(xx, SCORE + y, world[y + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
+			draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
 		}
 
+		}
 		/* halfway past screen? scroll */
 		if ((player.x - wpos) > WIDTH/2) {
 			for (y = 0; y < ROWS; y++)
