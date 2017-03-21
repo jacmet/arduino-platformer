@@ -164,6 +164,9 @@ static void render_tile_col(unsigned char *buf, int index, int col)
 	case 7: data = tile_tube2; ofs=19; break;
 	case 8: data = tile_square; ofs=22; break;
 	case 9: data = tile_bridge; ofs=25; break;
+	case 14: data = tile_fries; ofs=70; break;
+	case 15: data = tile_donut; ofs=77; break;
+
 	case 20: data = tile_girl0; ofs=50; break;
 	case 21: data = tile_girl1; ofs=50; break;
 	case 22: data = tile_girl2; ofs=50; break;
