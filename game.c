@@ -275,6 +275,11 @@ static void draw_tile_col(int col, int row, int index, int pos)
 	tft_blit8(col, row, 1, TILE, buf);
 }
 
+static int solid_tile(unsigned char tile)
+{
+	return tile == 1;
+}
+
 void game_init(void)
 {
 	int x, y;
@@ -389,12 +394,12 @@ void game_loop(void)
 		if (player.speed_x < 0) {
 			/* check left */
 			if ((player.x - wpos) < (TILE - PLAY_OFS) ||
-			    (world[(wx - 1) * ROWS + wy] == 1 && player.x < wx*TILE)) {
+			    (solid_tile(world[(wx - 1) * ROWS + wy]) && player.x < wx*TILE)) {
 				player.x = (wx * TILE);// - PLAY_OFS;
 				player.speed_x = 0;
 			}
 		} else {
-			if (world[(wx + 1) * ROWS + wy] == 1 &&
+			if (solid_tile(world[(wx + 1) * ROWS + wy]) &&
 			    (player.x + 15) > (wx+1) * TILE) {
 				player.x = wx * TILE + PLAY_OFS;
 				player.speed_x = 0;
@@ -404,13 +409,13 @@ void game_loop(void)
 
 		if (player.speed_y < 0) {
 			/* check above */
-			if (world[wx * ROWS + wy - 1] == 1 && player.y <= wy*TILE) {
+			if (solid_tile(world[wx * ROWS + wy - 1]) && player.y <= wy*TILE) {
 				player.y = wy*TILE;
 				player.speed_y = 0;
 			}
 		} else {
 			/* check below */
-			if (world[wx * ROWS + wy + 1] == 1 &&
+			if (solid_tile(world[wx * ROWS + wy + 1]) &&
 			    (player.y + 15) > (wy + 1)*TILE) {
 				player.y = (wy + 1) * TILE - 15;
 				player.speed_y = 0;
