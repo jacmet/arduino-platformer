@@ -41,9 +41,6 @@
 #include "fries.h"
 #include "donut.h"
 
-#define WIDTH 320
-#define HEIGHT 240
-
 #define TILE 16
 #define SCORE 3
 
