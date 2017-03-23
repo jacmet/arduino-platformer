@@ -464,7 +464,7 @@ void game_loop(void)
 			mirror = 1;
 
 		{
-			int xx = x % 20;
+			int xx = x % COLS;
 
 		draw_tile_player(xx, SCORE + y, world[y + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
 		draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
