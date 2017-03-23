@@ -382,7 +382,6 @@ void game_loop(void)
 	int state;
 	int on_floor = 0;
 	int scrollpos = 0;
-	int wpos = 0;
 	int tpos = 0;
 	int frame = 0;
 	int mirror = 0;
@@ -422,7 +421,7 @@ void game_loop(void)
 
 		if (player.speed_x < 0) {
 			/* check left */
-			if ((player.x - wpos) < (TILE - PLAY_OFS) ||
+			if (player.x < (TILE - PLAY_OFS) ||
 			    (solid_tile(world[(wx - 1) * ROWS + wy]) && player.x < wx*TILE)) {
 				player.x = (wx * TILE);// - PLAY_OFS;
 				player.speed_x = 0;
@@ -509,18 +508,16 @@ void game_loop(void)
 		}
 
 		/* halfway past screen? scroll */
-		if ((player.x - wpos) > WIDTH/2) {
+		if (player.x > WIDTH/2) {
 			for (y = 0; y < ROWS; y++)
 				draw_tile_col(scrollpos/TILE, SCORE+y,
 					      world[y + COLS*ROWS], scrollpos & (TILE-1));
 
-			wpos++;
 			scrollpos++;
 			if (scrollpos == WIDTH)
 				scrollpos = 0;
 
 			if ((scrollpos & (TILE-1)) == 0) {
-				wpos -= TILE;
 				player.x -= TILE;
 				tpos++;
 				memmove(world, &world[ROWS], ROWS*COLS);
