@@ -41,6 +41,9 @@
 #include "fries.h"
 #include "donut.h"
 
+/* desired frame time (1 / frames per second) */
+#define FRAMETIME (1000/30)
+
 #define TILE 16
 #define SCORE 3
 
@@ -369,6 +372,7 @@ void game_loop(void)
 		int x, y;
 		int wx, wy;
 		int sprite;
+		unsigned delta, start = millis();
 
 		state = js_state();
 
@@ -495,7 +499,10 @@ void game_loop(void)
 
 		tft_update();
 		frame++;
-		delay(35);
+
+		delta = millis() - start;
+		if (delta < FRAMETIME)
+			delay(FRAMETIME - delta);
 
 	} while (!(state & JS_QUIT));
 }
