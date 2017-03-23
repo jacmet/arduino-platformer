@@ -346,12 +346,13 @@ void game_init(void)
 	tft_setpal(84, DONUT_COLOR7);
 	tft_setpal(85, DONUT_COLOR7);
 
-	for (x = 0; x < COLS; x++)
+	for (x = 0; x < COLS; x++) {
+		for (y = 0; y < SCORE; y++)
+			draw_tile(x, y, 0);
+
 		for (y = 0; y < ROWS; y++)
 			draw_tile(x, SCORE+y, world[worldpos + y + x*ROWS]);
-
-	font_puts("GAME", 0, 0, 10, 4, 0xf800, TRANSP);
-	tft_cfg_scroll(32, HEIGHT-1);
+	}
 
 	player.x = 20;
 	player.y = 10;
