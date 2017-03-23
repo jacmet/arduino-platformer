@@ -38,6 +38,7 @@
 #include "dig8.h"
 #include "dig9.h"
 
+#include "diamond.h"
 #include "coin.h"
 #include "fries.h"
 #include "donut.h"
@@ -171,6 +172,8 @@ static void render_tile_col(unsigned char *buf, int index, int col)
 	case 7: data = tile_tree2; ofs=10; break;
 	case 8: data = tile_cloud1; ofs=13; break;
 	case 9: data = tile_cloud2; ofs=13; break;
+
+	case 12: data = tile_diamond; ofs=60; break;
 	case 13: data = tile_coin; ofs=65; break;
 	case 14: data = tile_fries; ofs=70; break;
 	case 15: data = tile_donut; ofs=77; break;
@@ -330,6 +333,10 @@ void game_init(void)
 	tft_setpal(54, GIRL0_COLOR4);
 	tft_setpal(55, GIRL0_COLOR5);
 	tft_setpal(56, GIRL0_COLOR6);
+
+	tft_setpal(61, DIAMOND_COLOR1);
+	tft_setpal(62, DIAMOND_COLOR2);
+	tft_setpal(63, DIAMOND_COLOR3);
 
 	tft_setpal(66, COIN_COLOR1);
 	tft_setpal(67, COIN_COLOR2);
