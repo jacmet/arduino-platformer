@@ -86,7 +86,6 @@
 #define WHITE       0xffff
 #define YELLOW      0xffe0
 
-static int worldpos = 0;
 static unsigned points = 0;
 
 struct Player
@@ -366,7 +365,7 @@ void game_init(void)
 			draw_tile(x, y, 0);
 
 		for (y = 0; y < ROWS; y++)
-			draw_tile(x, SCORE+y, world[worldpos + y + x*ROWS]);
+			draw_tile(x, SCORE+y, world[y + x*ROWS]);
 	}
 
 	player.x = 20;
@@ -445,17 +444,6 @@ void game_loop(void)
 				player.y = (wy + 1) * TILE - 15;
 				player.speed_y = 0;
 
-				if (0)
-				{
-					static int first = 0;
-					if ((first & 15) == 0)
-						worldpos = (worldpos + ROWS) % (sizeof(world) - COLS*ROWS);
-
-					for (y = 0; y < ROWS; y++)
-						draw_tile_col(first/16, SCORE+y, world[worldpos + y + (COLS-1)*ROWS], first&15);
-					first = (first + 1) % WIDTH;
-					tft_scroll(first);
-				}
 				on_floor = 1;
 			}
 		}
