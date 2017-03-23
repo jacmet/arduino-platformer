@@ -96,7 +96,7 @@ struct Player
 
 static struct Player player;
 
-static unsigned char world[] = {
+static const unsigned char romworld[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -155,6 +155,8 @@ static unsigned char world[] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
+
+static unsigned char world[ROWS * (COLS + 1)];
 
 /* render column of index tile data to buf[TILE] */
 static void render_tile_col(unsigned char *buf, int index, int col)
@@ -360,6 +362,8 @@ void game_init(void)
 	tft_setpal(84, DONUT_COLOR7);
 	tft_setpal(85, DONUT_COLOR7);
 
+	memcpy(world, romworld, sizeof(world));
+
 	for (x = 0; x < COLS; x++) {
 		for (y = 0; y < SCORE; y++)
 			draw_tile(x, y, 0);
@@ -379,9 +383,10 @@ void game_loop(void)
 	int on_floor = 0;
 	int scrollpos = 0;
 	int wpos = 0;
-
+	int tpos = 0;
 	int frame = 0;
 	int mirror = 0;
+	int rompos = ROWS*(COLS+1);
 
 	do {
 		int x, y;
@@ -483,36 +488,45 @@ void game_loop(void)
 			mirror = 1;
 
 		{
-			int xx = x % COLS;
+			int xx = (x + tpos) % COLS;
+			int px = (player.x + tpos * TILE) % WIDTH;
 
-		draw_tile_player(xx, SCORE + y, world[y + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
-		draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
-		x++;
-		xx++;
+			draw_tile_player(xx, SCORE + y, world[y + x*ROWS], px, player.y+48, sprite, mirror);
+			draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], px, player.y+48, sprite, mirror);
+			x++;
+			xx++;
 
-		/* handle wraparound */
-		if (xx >= WIDTH/TILE) {
-			xx -= WIDTH/TILE;
-			draw_tile_player(xx, SCORE + y, world[y + x*ROWS], (player.x % WIDTH) - WIDTH, player.y+48, sprite, mirror);
-			draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], (player.x % WIDTH) - WIDTH, player.y+48, sprite, mirror);
+			/* handle wraparound */
+			if (xx >= COLS) {
+				xx -= COLS;
+				draw_tile_player(xx, SCORE + y, world[y + x*ROWS], px - WIDTH, player.y+48, sprite, mirror);
+				draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], px - WIDTH, player.y+48, sprite, mirror);
 
-		} else {
-			draw_tile_player(xx, SCORE + y, world[y + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
-			draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], player.x % WIDTH, player.y+48, sprite, mirror);
+			} else {
+				draw_tile_player(xx, SCORE + y, world[y + x*ROWS], px, player.y+48, sprite, mirror);
+				draw_tile_player(xx, SCORE + y+1, world[y + 1 + x*ROWS], px, player.y+48, sprite, mirror);
+			}
 		}
 
-		}
 		/* halfway past screen? scroll */
 		if ((player.x - wpos) > WIDTH/2) {
 			for (y = 0; y < ROWS; y++)
 				draw_tile_col(scrollpos/TILE, SCORE+y,
-					      world[y + (wpos/TILE + COLS)*ROWS], scrollpos & (TILE-1));
+					      world[y + COLS*ROWS], scrollpos & (TILE-1));
 
 			wpos++;
 			scrollpos++;
 			if (scrollpos == WIDTH)
 				scrollpos = 0;
 
+			if ((scrollpos & (TILE-1)) == 0) {
+				wpos -= TILE;
+				player.x -= TILE;
+				tpos++;
+				memmove(world, &world[ROWS], ROWS*COLS);
+				memcpy(&world[ROWS*COLS], &romworld[rompos], ROWS);
+				rompos += ROWS;
+			}
 			tft_scroll(scrollpos);
 		}
 
