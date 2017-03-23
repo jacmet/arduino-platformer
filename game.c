@@ -87,6 +87,7 @@
 #define YELLOW      0xffe0
 
 static int worldpos = 0;
+static unsigned points = 0;
 
 struct Player
 {
@@ -457,6 +458,21 @@ void game_loop(void)
 				}
 				on_floor = 1;
 			}
+		}
+
+		wx = (player.x + 8) / TILE;
+		wy = (player.y + 8) / TILE;
+
+		switch (world[wx * ROWS + wy]) {
+		case 12:
+		case 13:
+		case 14:
+		case 15:
+			world[wx * ROWS + wy] = 0;
+			break;
+
+		default:
+			break;
 		}
 
 		/* fall into hole? */
