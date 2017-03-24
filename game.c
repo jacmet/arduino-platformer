@@ -501,9 +501,10 @@ static int main_loop(void)
 		player.speed_y += 1;
 	player.speed_x = 0;
 
-	if (on_floor && state & JS_UP)
+	if (on_floor && state & JS_UP) {
 		player.speed_y -= 12;
-
+		tft_beep(100, 50);
+	}
 	if (state & JS_RIGHT)
 		player.speed_x += 1;
 
@@ -561,6 +562,7 @@ static int main_loop(void)
 		case 15: points += 10; break;
 		}
 		screen[wx * ROWS + wy] = 0;
+		tft_beep(500, 20);
 		draw_points();
 	}
 
@@ -663,15 +665,19 @@ static int menu_loop(void)
 		boybg = 1;
 		boytx = RED;
 
-		if (state & JS_RIGHT)
+		if (state & JS_RIGHT) {
 			sprite = 20;
+			tft_beep(100, 50);
+		}
 	} else {
 		girl |= (frame & 4) ? 1 : 2;
 		girlbg = 1;
 		girltx = RED;
 
-		if (state & JS_LEFT)
+		if (state & JS_LEFT) {
 			sprite = 24;
+			tft_beep(100, 50);
+		}
 	}
 
 	draw_playerx2(80, 140, boy, boybg);
@@ -687,8 +693,12 @@ static void gameover_init(void)
 {
 	tft_scroll(0);
 
+	tft_beep(50, 300);
 	font_puts("GAME", 20, 10, 11, 14, RED, TRANSP);
 	font_puts("OVER", 20, 130, 11, 14, RED, TRANSP);
+
+	delay(300);
+	tft_beep(50, 300);
 }
 
 static int gameover_loop(void)
