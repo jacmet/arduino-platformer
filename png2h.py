@@ -19,13 +19,18 @@ except:
     sys.stderr.write('Error reading %s\n' % sys.argv[1])
     sys.exit(1)
 
-if img.size != DIMENSIONS or img.mode != 'P' or len(img.palette.palette) > MAXCOLORS * 3:
+if img.size != DIMENSIONS:
+    sys.stderr.write('Warning: %s has dimensions %dx%d. Are you sure this is correct?\n'
+                         % (sys.argv[1], img.size[0], img.size[1]))
+
+if img.size[0] % 2 or img.size[1] % 2 or img.mode != 'P' or len(img.palette.palette) > MAXCOLORS * 3:
     sys.stderr.write('%s is not in a valid format\n' % sys.argv[1])
     sys.exit(1)
 
 # engine expects row major format
 img = img.transpose(Image.TRANSPOSE)
 pixels = img.tobytes()
+elems = img.size[0] / 2
 
 alpha = True if img.palette.mode == 'RGBA' else False
 
@@ -35,7 +40,7 @@ for pair in [pixels[i:i+2] for i in range(0, len(pixels), 2)]:
     b = ord(pair[0]) + ord(pair[1]) * 16
     if not alpha:
         b += 0x11
-    sys.stdout.write('%s0x%02x,' % ('\n\t' if ofs % 8 == 0 else ' ', b))
+    sys.stdout.write('%s0x%02x,' % ('\n\t' if ofs % elems == 0 else ' ', b))
     ofs += 1
 
 sys.stdout.write('\n};\n\n')
