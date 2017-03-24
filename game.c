@@ -297,6 +297,7 @@ void game_init(void)
 {
 	int x, y;
 
+	js_init();
 	tft_init();
 
 	tft_setpal(0, SKY);
