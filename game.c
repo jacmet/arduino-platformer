@@ -382,6 +382,7 @@ void game_loop(void)
 	int state;
 	int on_floor = 0;
 	int scrollpos = 0;
+	/* tile x coordinate corresponding to start of screen */
 	int tpos = 0;
 	int frame = 0;
 	int mirror = 0;
