@@ -414,7 +414,9 @@ static void main_init(void)
 
 	player.x = 20;
 	player.y = 10;
+	player.speed_x = player.speed_y = 0;
 
+	points = 0;
 	tpos = 0;
 	rompos = ROWS*(COLS+1);
 	scrollpos = 0;
