@@ -6,8 +6,6 @@ void setup(void)
 	Serial.begin(115200);
 
 	game_init();
-
-	Serial.println("setup done");
 }
 
 void loop(void)
