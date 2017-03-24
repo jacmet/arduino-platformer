@@ -70,7 +70,8 @@ enum States {
 #define PLAY_WIDTH (TILE - 1 - PLAY_OFS)
 #define PLAY_HEIGHT (TILE - 1)
 
-#define COLS (WIDTH / TILE)
+#define PWIDTH (WIDTH - 32)
+#define COLS (PWIDTH / TILE)
 #define ROWS ((HEIGHT / TILE) - SCORE)
 
 #define SKY 0x5ebf
@@ -325,9 +326,41 @@ static void draw_playerx2(int sx, int sy, int index, int background)
 	}
 }
 
+static void draw_player(int sx, int sy, int index, int background)
+{
+	unsigned char buf[TILE];
+	int x, y;
+
+	for (x = 0; x < TILE; x++) {
+		render_tile_col(buf, index, x);
+
+		for (y = 0; y < TILE; y++)
+			if (!buf[y])
+				buf[y] = background;
+
+		tft_blit8(sx + x, sy, 1, TILE, buf);
+	}
+}
+
+static void draw_points(void)
+{
+	char buf[8];
+	int y;
+
+	sprintf(buf, "%05u", points);
+
+	for (y = 0; buf[y]; y++)
+		draw_player(WIDTH-20, (5+y)*TILE, 100 + buf[y] - '0', 7);
+}
+
 static int solid_tile(unsigned char tile)
 {
 	return tile > 0 && tile < 6;
+}
+
+static int powerup_tile(unsigned char tile)
+{
+	return tile >= 12 && tile <= 15;
 }
 
 static void add_world_row(void)
@@ -439,6 +472,22 @@ static void main_init(void)
 	scrollpos = 0;
 	mirror = 0;
 	on_floor = 0;
+
+	tft_cfg_scroll(WIDTH-PWIDTH, 0);
+
+	tft_fill(PWIDTH, 0, 1, HEIGHT, GRAY1);
+	tft_fill(PWIDTH+1, 0, 1, HEIGHT, GRAY2);
+	tft_fill(PWIDTH+2, 0, 1, HEIGHT, GRAY3);
+	tft_fill(PWIDTH+3, 0, WIDTH-PWIDTH-3, HEIGHT, BLACK);
+
+	font_puts("SIBEs", WIDTH-29, 10, 1, 1, WHITE, BLACK);
+	font_putc('S', WIDTH-27+0*FONT_W, 22, 1, 1, 0x7f77, TRANSP);
+	font_putc('T', WIDTH-27+1*FONT_W, 22, 1, 1, 0xffcf, TRANSP);
+	font_putc('E', WIDTH-27+2*FONT_W, 22, 1, 1, 0xeb6d, TRANSP);
+	font_putc('M', WIDTH-27+3*FONT_W, 22, 1, 1, 0x547d, TRANSP);
+	font_puts("Feest", WIDTH-29, 34, 1, 1, WHITE, BLACK);
+
+	draw_points();
 }
 
 static int main_loop(void)
@@ -504,16 +553,15 @@ static int main_loop(void)
 	wx = (player.x + 8) / TILE;
 	wy = (player.y + 8) / TILE;
 
-	switch (screen[wx * ROWS + wy]) {
-	case 12:
-	case 13:
-	case 14:
-	case 15:
+	if (powerup_tile(screen[wx * ROWS + wy])) {
+		switch (screen[wx * ROWS + wy]) {
+		case 12: points += 1; break;
+		case 13: points += 2; break;
+		case 14: points += 5; break;
+		case 15: points += 10; break;
+		}
 		screen[wx * ROWS + wy] = 0;
-		break;
-
-	default:
-		break;
+		draw_points();
 	}
 
 	/* fall into hole? */
@@ -536,7 +584,7 @@ static int main_loop(void)
 
 	{
 		int xx = (x + tpos) % COLS;
-		int px = (player.x + tpos * TILE) % WIDTH;
+		int px = (player.x + tpos * TILE) % PWIDTH;
 
 		draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px, player.y + SCORE*TILE, sprite, mirror);
 		draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px, player.y + SCORE*TILE, sprite, mirror);
@@ -546,8 +594,8 @@ static int main_loop(void)
 		/* handle wraparound */
 		if (xx >= COLS) {
 			xx -= COLS;
-			draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px - WIDTH, player.y + SCORE*TILE, sprite, mirror);
-			draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px - WIDTH, player.y + SCORE*TILE, sprite, mirror);
+			draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px - PWIDTH, player.y + SCORE*TILE, sprite, mirror);
+			draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px - PWIDTH, player.y + SCORE*TILE, sprite, mirror);
 		} else {
 			draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px, player.y + SCORE*TILE, sprite, mirror);
 			draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px, player.y + SCORE*TILE, sprite, mirror);
@@ -555,13 +603,13 @@ static int main_loop(void)
 	}
 
 	/* halfway past screen? scroll */
-	if (player.x > WIDTH/2) {
+	if (player.x > PWIDTH/2) {
 		for (y = 0; y < ROWS; y++)
 			draw_tile_col(scrollpos/TILE, SCORE+y,
 				      screen[y + COLS*ROWS], scrollpos & (TILE-1));
 
 		scrollpos++;
-		if (scrollpos == WIDTH)
+		if (scrollpos == PWIDTH)
 			scrollpos = 0;
 
 		if ((scrollpos & (TILE-1)) == 0) {
