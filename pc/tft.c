@@ -188,3 +188,7 @@ void tft_update(void)
 	update_texture();
 	render_texture();
 }
+
+void tft_beep(unsigned freq, unsigned long duration)
+{
+}

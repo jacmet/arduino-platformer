@@ -312,3 +312,8 @@ void tft_blit8x2(int x, int y, int w, int h, unsigned char *d)
 void tft_update(void)
 {
 }
+
+void tft_beep(unsigned freq, unsigned long duration)
+{
+	tone(3, freq, duration);
+}

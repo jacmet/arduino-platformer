@@ -23,6 +23,8 @@ void tft_blit8(int x, int y, int w, int h, unsigned char *d);
 /* blit 8bit image of dimensions w x h to x,y and upscale to 2w x 2h */
 void tft_blit8x2(int x, int y, int w, int h, unsigned char *d);
 
+void tft_beep(unsigned freq, unsigned long duration);
+
 #ifdef __cplusplus
 };
 #endif
