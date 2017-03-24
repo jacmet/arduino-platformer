@@ -4,7 +4,8 @@ int main(int argc, char **argv)
 {
 	game_init();
 
-	game_loop();
+	while (1)
+		game_loop();
 
 	return 0;
 }
