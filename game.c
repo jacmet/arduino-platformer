@@ -687,8 +687,8 @@ static void gameover_init(void)
 {
 	tft_scroll(0);
 
-	font_puts("GAME", 5, 10, 11, 14, RED, TRANSP);
-	font_puts("OVER", 5, 130, 11, 14, RED, TRANSP);
+	font_puts("GAME", 20, 10, 11, 14, RED, TRANSP);
+	font_puts("OVER", 20, 130, 11, 14, RED, TRANSP);
 }
 
 static int gameover_loop(void)
