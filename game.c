@@ -44,6 +44,8 @@
 #include "fries.h"
 #include "donut.h"
 
+#include "world.h"
+
 enum States {
 	STATE_START,
 	STATE_MENU,
@@ -55,7 +57,7 @@ enum States {
 #define FRAMETIME (1000/30)
 
 #define TILE 16
-#define SCORE 3
+#define SCORE 1
 
 /* height (y-coordinates) to consider player dead from
    (E.G. when falling into hole) */
@@ -114,6 +116,7 @@ struct Player
 
 static struct Player player;
 
+#if 0
 static const unsigned char romworld[] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1,
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1,
@@ -173,7 +176,7 @@ static const unsigned char romworld[] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
-
+#endif
 static unsigned char screen[ROWS * (COLS + 1)];
 
 /* render column of index tile data to buf[TILE] */
@@ -327,6 +330,19 @@ static int solid_tile(unsigned char tile)
 	return tile > 0 && tile < 6;
 }
 
+static void add_world_row(void)
+{
+	int y;
+
+	memmove(screen, &screen[ROWS], ROWS*COLS);
+
+	for (y = 0; y < ROWS/2; y++) {
+		unsigned char d = pgm_read_byte(&tile_world[rompos++]);
+		screen[ROWS*COLS + 2*y] = d & 0xf;
+		screen[ROWS*COLS + 2*y + 1] = d >> 4;
+	}
+}
+
 void game_init(void)
 {
 	int x, y;
@@ -402,7 +418,9 @@ static void main_init(void)
 {
 	int x, y;
 
-	memcpy(screen, romworld, sizeof(screen));
+	rompos = 0;
+	for (x = 0; x < (COLS+1); x++)
+		add_world_row();
 
 	for (x = 0; x < COLS; x++) {
 		for (y = 0; y < SCORE; y++)
@@ -418,7 +436,6 @@ static void main_init(void)
 
 	points = 0;
 	tpos = 0;
-	rompos = ROWS*(COLS+1);
 	scrollpos = 0;
 	mirror = 0;
 	on_floor = 0;
@@ -550,9 +567,7 @@ static int main_loop(void)
 		if ((scrollpos & (TILE-1)) == 0) {
 			player.x -= TILE;
 			tpos++;
-			memmove(screen, &screen[ROWS], ROWS*COLS);
-			memcpy(&screen[ROWS*COLS], &romworld[rompos], ROWS);
-			rompos += ROWS;
+			add_world_row();
 		}
 		tft_scroll(scrollpos);
 	}
