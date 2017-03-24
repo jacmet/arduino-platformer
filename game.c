@@ -521,19 +521,19 @@ static int main_loop(void)
 		int xx = (x + tpos) % COLS;
 		int px = (player.x + tpos * TILE) % WIDTH;
 
-		draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px, player.y+48, sprite, mirror);
-		draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px, player.y+48, sprite, mirror);
+		draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px, player.y + SCORE*TILE, sprite, mirror);
+		draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px, player.y + SCORE*TILE, sprite, mirror);
 		x++;
 		xx++;
 
 		/* handle wraparound */
 		if (xx >= COLS) {
 			xx -= COLS;
-			draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px - WIDTH, player.y+48, sprite, mirror);
-			draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px - WIDTH, player.y+48, sprite, mirror);
+			draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px - WIDTH, player.y + SCORE*TILE, sprite, mirror);
+			draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px - WIDTH, player.y + SCORE*TILE, sprite, mirror);
 		} else {
-			draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px, player.y+48, sprite, mirror);
-			draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px, player.y+48, sprite, mirror);
+			draw_tile_player(xx, SCORE + y, screen[y + x*ROWS], px, player.y + SCORE*TILE, sprite, mirror);
+			draw_tile_player(xx, SCORE + y+1, screen[y + 1 + x*ROWS], px, player.y + SCORE*TILE, sprite, mirror);
 		}
 	}
 
