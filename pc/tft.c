@@ -27,48 +27,50 @@ static void update_texture(void)
 static void render_texture(void)
 {
 	SDL_Rect src, dst;
+	unsigned w = WIDTH - (scroll_bottom + scroll_top);
 
 	SDL_RenderClear(renderer);
 
-	/* top */
-	if (scroll_top) {
-		src.x = src.y = 0;
-		src.w = WIDTH;
-		src.h = scroll_top;
+	/* bottom */
+	if (scroll_bottom) {
+		src.x = 0;
+		src.y = 0;
+		src.w = scroll_bottom;
+		src.h = HEIGHT;
 
 		SDL_RenderCopy(renderer, texture, &src, &src);
 	}
 
 	/* scrolling area */
-	src.x = scroll_pos;
-	src.y = scroll_top;
-	src.w = WIDTH - scroll_pos;
-	src.h = scroll_bottom + 1 - scroll_top;
-	dst.x = 0;
-	dst.y = scroll_top;
-	dst.w = WIDTH - scroll_pos;
-	dst.h = scroll_bottom + 1 - scroll_top;
+	src.x = scroll_bottom + scroll_pos;
+	src.y = 0;
+	src.w = w - scroll_pos;
+	src.h = HEIGHT;
+	dst.x = scroll_bottom;
+	dst.y = 0;
+	dst.w = w - scroll_pos;
+	dst.h = HEIGHT;
 
 	SDL_RenderCopy(renderer, texture, &src, &dst);
 
 	if (scroll_pos) {
-		src.x = 0;
-		src.y = scroll_top;
+		src.x = scroll_bottom;
+		src.y = 0;
 		src.w = scroll_pos;
-		src.h = scroll_bottom + 1 - scroll_top;
-		dst.x = WIDTH - scroll_pos;
-		dst.y = scroll_top;
+		src.h = HEIGHT;
+		dst.x = scroll_bottom + w - scroll_pos;
+		dst.y = 0;
 		dst.w = scroll_pos;
-		dst.h = scroll_bottom + 1 - scroll_top;
+		dst.h = HEIGHT;
 		SDL_RenderCopy(renderer, texture, &src, &dst);
 	}
 
-	/* bottom */
-	if (scroll_bottom != (HEIGHT-1)) {
-		src.x = 0;
-		src.y = scroll_bottom;
-		src.w = WIDTH;
-		src.h = HEIGHT - scroll_bottom;
+	/* top */
+	if (scroll_top) {
+		src.x = WIDTH - scroll_top;
+		src.y = 0;
+		src.w = scroll_top;
+		src.h = HEIGHT;
 
 		SDL_RenderCopy(renderer, texture, &src, &src);
 	}
@@ -103,8 +105,7 @@ void tft_init(void)
 	if (!window || !renderer || !texture)
 		exit(2);
 
-	scroll_pos = scroll_top = 0;
-	scroll_bottom = HEIGHT-1;
+	scroll_pos = scroll_top = scroll_bottom = 0;
 
 	memset(screen, 0xff, sizeof(screen));
 	update_texture();
@@ -133,8 +134,7 @@ void tft_scroll(unsigned s) // 0..WIDTH-1
 
 void tft_cfg_scroll(unsigned top, unsigned bottom) // lines
 {
-	SDL_assert(top < bottom);
-	SDL_assert(bottom < HEIGHT);
+	SDL_assert((top + bottom) <= WIDTH);
 
 	scroll_top = top;
 	scroll_bottom = bottom;
