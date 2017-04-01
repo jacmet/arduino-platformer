@@ -378,8 +378,6 @@ static void add_world_row(void)
 
 void game_init(void)
 {
-	int x, y;
-
 	js_init();
 	tft_init();
 
